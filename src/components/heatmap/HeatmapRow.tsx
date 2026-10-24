@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import type { HeatCell } from '@/domain/heatIndexGrid'
 import { HeatmapCell } from './HeatmapCell'
-import { formatDayMonth, formatFullDate, formatWeekdayAbbreviation } from './heatmapLabels'
+import { formatFullDate, formatWeekdayAbbreviation } from './heatmapLabels'
 import styles from './HeatmapGrid.module.css'
 
 type HeatmapRowProps = {
@@ -39,7 +39,7 @@ export const HeatmapRow = memo(function HeatmapRow({
         aria-colindex={1}
       >
         <span className={styles.rowHeaderContent}>
-          <span>{formatDayMonth(day)}</span>
+          <span>{formatFullDate(day)}</span>
           <span className={styles.weekday}>{formatWeekdayAbbreviation(day)}</span>
         </span>
       </th>

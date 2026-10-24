@@ -34,7 +34,7 @@
   border-collapse: separate;
   border-spacing: var(--heat-gap);
   /*
-   * Largura natural: 104px (datas) + 24 × largura da célula + 25 espaçamentos.
+   * Largura natural: 116px (datas) + 24 × largura da célula + 25 espaçamentos.
    * Em cartões mais largos que isso a tabela ocupa 100% e o `table-layout:
    * fixed` reparte a sobra entre as colunas — o mapa usa a área disponível em
    * vez de deixar um vazio à direita. Abaixo desse ponto continua havendo
@@ -147,6 +147,8 @@
   flex-direction: column;
   justify-content: center;
   line-height: 1.05;
+  /* `dd/mm/aaaa` é um rótulo único: nunca quebra entre a data e o dia da semana. */
+  white-space: nowrap;
 }
 
 .weekday {

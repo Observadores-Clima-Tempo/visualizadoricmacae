@@ -58,10 +58,10 @@ describe('HeatmapGrid', () => {
     expect(markup).toContain('>23h<')
   })
 
-  it('mostra a data abreviada e o dia da semana na coluna fixa', () => {
-    expect(markup).toContain('>01/12<')
+  it('mostra a data completa e o dia da semana na coluna fixa', () => {
+    expect(markup).toContain('>01/12/2024<')
     expect(markup).toContain('>dom<')
-    expect(markup).toContain('>02/12<')
+    expect(markup).toContain('>02/12/2024<')
     expect(markup).toContain('>seg<')
   })
 

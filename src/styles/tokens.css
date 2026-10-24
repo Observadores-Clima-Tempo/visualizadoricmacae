@@ -12,14 +12,18 @@
   --color-hover-ring: rgba(20, 40, 78, 0.35);
   --color-focus-ring: rgba(20, 40, 78, 0.55);
 
-  /* Risco */
+  /*
+   * Risco: a escala vai do amarelo ao vermelho, escurecendo a cada passo, para
+   * que as faixas continuem distintas entre si e das cores de "sem dado"
+   * (superfície neutra).
+   */
   --risk-none-bg: #edf4fc;
   --risk-none-fg: #14284e;
   --risk-caution-bg: #fff348;
   --risk-caution-fg: #14284e;
   --risk-extreme-caution-bg: #ffba39;
   --risk-extreme-caution-fg: #14284e;
-  --risk-danger-bg: #e87b1a;
+  --risk-danger-bg: #c94a08;
   --risk-danger-fg: #ffffff;
   --risk-extreme-danger-bg: #f01828;
   --risk-extreme-danger-fg: #ffffff;
@@ -78,7 +82,7 @@
   --heat-cell-font: 11px;
   --heat-header-font: var(--text-xs);
   --heat-gap: 2px;
-  --heat-date-col-w: 104px;
+  --heat-date-col-w: 116px;
   --heat-header-h: 28px;
 }
 
