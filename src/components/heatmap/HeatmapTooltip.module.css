@@ -1,0 +1,105 @@
+/*
+ * Tooltip do mapa de calor. Fica oculto até o hook de interação medir o
+ * conteúdo e escrever `left`/`top` com `data-ready="true"`.
+ */
+
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 176px;
+  max-width: 320px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  white-space: normal;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 90ms ease-out;
+}
+
+.tooltip[data-ready='true'] {
+  visibility: visible;
+  opacity: 1;
+}
+
+.when {
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+}
+
+.value {
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px var(--space-2);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-semibold);
+  line-height: 1.5;
+}
+
+.badge[data-category='none'] {
+  background: var(--risk-none-bg);
+  color: var(--risk-none-fg);
+}
+
+.badge[data-category='caution'] {
+  background: var(--risk-caution-bg);
+  color: var(--risk-caution-fg);
+}
+
+.badge[data-category='extremeCaution'] {
+  background: var(--risk-extreme-caution-bg);
+  color: var(--risk-extreme-caution-fg);
+}
+
+.badge[data-category='danger'] {
+  background: var(--risk-danger-bg);
+  color: var(--risk-danger-fg);
+}
+
+.badge[data-category='extremeDanger'] {
+  background: var(--risk-extreme-danger-bg);
+  color: var(--risk-extreme-danger-fg);
+}
+
+.badge[data-category='unknown'] {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+}
+
+.origin {
+  color: var(--color-text);
+}
+
+.observations {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+  .tooltip {
+    max-width: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: none;
+  }
+}

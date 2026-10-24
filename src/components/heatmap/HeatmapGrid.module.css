@@ -36,6 +36,25 @@
 .hourHeader,
 .rowHeader {
   background: var(--color-surface);
+  transition:
+    background-color 80ms ease-out,
+    color 80ms ease-out;
+}
+
+/*
+ * Realce do cabeçalho em foco/hover. O hook escreve `data-hover-hour` e
+ * `data-hover-day` na tabela e espelha o atributo no cabeçalho afetado, porque o
+ * CSS não compara atributos entre elementos. Nenhuma célula é re-renderizada.
+ */
+.hourHeader[data-hover-hour] {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.rowHeader[data-hover-day],
+.row:hover .rowHeader {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
 }
 
 .cornerCell {
@@ -140,4 +159,18 @@
 
 .cell:hover {
   box-shadow: inset 0 0 0 1px rgba(20, 40, 78, 0.35);
+}
+
+/* Foco por teclado: anel interno na cor de texto, distinto do anel de hover. */
+.cell:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cornerCell,
+  .hourHeader,
+  .rowHeader {
+    transition: none;
+  }
 }

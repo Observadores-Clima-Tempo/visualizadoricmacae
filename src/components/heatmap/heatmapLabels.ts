@@ -59,6 +59,13 @@ export function formatWeekdayAbbreviation(date: string): string {
   return WEEKDAY_ABBREVIATIONS[parts.weekday] ?? ''
 }
 
+/** `2024-12-01` -> `Dom` (usado nas linhas do tooltip). */
+export function formatWeekdayShort(date: string): string {
+  const abbreviation = formatWeekdayAbbreviation(date)
+  if (abbreviation === '') return ''
+  return abbreviation.charAt(0).toUpperCase() + abbreviation.slice(1)
+}
+
 /** `14` -> `14h` */
 export function formatHourLabel(hour: number): string {
   return `${hour}h`
