@@ -1,7 +1,9 @@
 .panel {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
@@ -16,6 +18,7 @@
  */
 .header {
   display: flex;
+  flex: 0 0 auto;
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
@@ -51,13 +54,21 @@
   align-items: flex-end;
 }
 
-/* A matriz gerencia a própria rolagem: aqui só se impede overflow do cartão. */
+/*
+ * A matriz gerencia a própria rolagem: aqui só se impede overflow do cartão e
+ * se entrega ao conteúdo toda a altura que sobrar entre cabeçalho e rodapé.
+ */
 .body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   min-width: 0;
+  min-height: 0;
   padding: 0 var(--space-6) var(--space-6);
 }
 
 .footer {
+  flex: 0 0 auto;
   padding: var(--space-3) var(--space-6) var(--space-5);
   border-top: 1px solid var(--color-border);
   color: var(--color-text-muted);

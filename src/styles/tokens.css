@@ -38,6 +38,9 @@
   /* Elevação do cabeçalho fixo da matriz, só a partir de 4px de rolagem. */
   --shadow-sticky: 0 6px 12px -6px rgba(20, 40, 78, 0.28);
 
+  /* Layout: o conteúdo acompanha a tela até este limite. */
+  --layout-max-width: 1720px;
+
   /* Movimento */
   --duration-fast: 120ms;
   --duration-micro: 90ms;
@@ -73,7 +76,29 @@
   --heat-cell-w: 38px;
   --heat-cell-h: 26px;
   --heat-cell-font: 11px;
+  --heat-header-font: var(--text-xs);
   --heat-gap: 2px;
   --heat-date-col-w: 104px;
   --heat-header-h: 28px;
+}
+
+/*
+ * Telas grandes: a tabela estica as colunas para ocupar a largura do cartão e
+ * ganha linhas e rótulos proporcionalmente maiores. A altura útil vem do
+ * layout (a matriz ocupa o que sobra no painel), não de um limite próprio.
+ */
+@media (min-width: 1440px) {
+  :root {
+    --heat-cell-h: 28px;
+    --heat-cell-font: 12px;
+    --heat-header-font: 13px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --heat-cell-h: 30px;
+    --heat-cell-font: 13px;
+    --heat-header-font: 14px;
+  }
 }

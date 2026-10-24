@@ -87,6 +87,20 @@ describe('buildHeatGrid — estrutura da grade', () => {
       daysWithoutData: 1,
     })
   })
+
+  it('sem dias no período, a cobertura é vazia e a razão é 0', () => {
+    const grid = buildHeatGrid([], { days: [], aggregation: 'mean' })
+
+    expect(grid.days).toEqual([])
+    expect(grid.cells).toEqual([])
+    expect(grid.coverage).toEqual({
+      totalCells: 0,
+      filledCells: 0,
+      ratio: 0,
+      daysWithData: 0,
+      daysWithoutData: 0,
+    })
+  })
 })
 
 describe('buildHeatGrid — agregação entre bairros', () => {
@@ -216,6 +230,41 @@ describe('buildHeatGrid — ausência de dados', () => {
     buildHeatGrid(readings, { days: TWO_DAYS, aggregation: 'mean' })
 
     expect(readings).toEqual(snapshot)
+  })
+
+  it('descarta leituras com hora ou índice de calor inválidos', () => {
+    const grid = buildHeatGrid(
+      [
+        makeReading({ bairroId: 'centro', date: '2025-01-01', hour: 24, heatIndexC: 30 }),
+        makeReading({ bairroId: 'centro', date: '2025-01-01', hour: -1, heatIndexC: 30 }),
+        makeReading({ bairroId: 'centro', date: '2025-01-01', hour: 10.5, heatIndexC: 30 }),
+        makeReading({ bairroId: 'centro', date: '2025-01-01', hour: 12, heatIndexC: Number.NaN }),
+        makeReading({ bairroId: 'centro', date: '2025-01-01', hour: 13, heatIndexC: 30 }),
+      ],
+      { days: ['2025-01-01'], aggregation: 'mean' },
+    )
+
+    expect(grid.coverage.filledCells).toBe(1)
+    expect(getCell(grid, '2025-01-01', 13)?.heatIndexC).toBe(30)
+    expect(getCell(grid, '2025-01-01', 12)?.heatIndexC).toBeNull()
+    expect(getCell(grid, '2025-01-01', 10)?.heatIndexC).toBeNull()
+  })
+
+  it('ignora um readingCount não finito ao somar observações', () => {
+    const grid = buildHeatGrid(
+      [
+        makeReading({
+          bairroId: 'centro',
+          date: '2025-01-01',
+          hour: 8,
+          heatIndexC: 30,
+          readingCount: Number.NaN,
+        }),
+      ],
+      { days: ['2025-01-01'], aggregation: 'mean' },
+    )
+
+    expect(getCell(grid, '2025-01-01', 8)?.observationCount).toBe(0)
   })
 })
 

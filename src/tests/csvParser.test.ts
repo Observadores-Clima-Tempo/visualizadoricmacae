@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 
 import type { BairroReadings } from '@/domain/heatIndexTypes'
 import { listSources, toBairroId, toBairroLabel, type CsvSource } from '@/data/csvSources'
@@ -37,6 +37,35 @@ describe('csvSources', () => {
       expect(source.content.length).toBeGreaterThan(0)
       expect(source.content).toContain('IC (C°)')
     }
+  })
+
+  it('trata rótulos vazios ou só com espaços sem quebrar', () => {
+    expect(toBairroLabel('')).toBe('')
+    expect(toBairroLabel('   ')).toBe('')
+    expect(toBairroId('   ')).toBe('')
+  })
+})
+
+describe('parseAllSources — tolerância a arquivos inválidos', () => {
+  it('ignora o arquivo com cabeçalho inválido, avisa e mantém os demais', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const valid = makeSource(
+      `${HEADER_WITH_TIME}
+2024-12-01,00:59:50,24.5,91.2,76.1,76.12,77.58,25.32,0.82`,
+      'Bom',
+    )
+    const broken = makeSource('Data,Temperatura\n2024-12-01,25', 'Quebrado')
+
+    const result = parseAllSources([broken, valid])
+
+    expect(result.bairros.map((bairro) => bairro.bairroLabel)).toEqual(['Bom'])
+    expect(result.reports.map((report) => report.bairroLabel)).toEqual(['Bom'])
+    expect(result.totalRejected).toBe(0)
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(String(warn.mock.calls[0]?.[0])).toContain('Arquivo ignorado')
+    expect(String(warn.mock.calls[0]?.[0])).toContain('Quebrado.csv')
+
+    warn.mockRestore()
   })
 })
 

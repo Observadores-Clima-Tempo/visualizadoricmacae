@@ -279,13 +279,16 @@ export function parseStationCsv(source: CsvSource): ParseStationResult {
 /**
  * Imports every bundled CSV. Files with an invalid header are skipped with a
  * warning instead of breaking the application.
+ *
+ * `sources` existe para que a tolerância a arquivos inválidos seja testável
+ * sem depender de um `.csv` quebrado dentro de `data/`.
  */
-export function parseAllSources(): ParseAllSourcesResult {
+export function parseAllSources(sources: CsvSource[] = listSources()): ParseAllSourcesResult {
   const bairros: BairroReadings[] = []
   const reports: ImportReport[] = []
   let totalRejected = 0
 
-  for (const source of listSources()) {
+  for (const source of sources) {
     try {
       const { readings, report } = parseStationCsv(source)
       bairros.push({ bairroId: source.bairroId, bairroLabel: source.bairroLabel, readings })

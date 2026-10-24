@@ -31,6 +31,16 @@ export type HeatmapActiveCell = {
   hour: number
 }
 
+/** Estado que só vale enquanto a grade que o originou estiver na tela. */
+type GridScopedState<T> = {
+  grid: HeatGrid
+  value: T
+}
+
+function firstCell(grid: HeatGrid): HeatmapActiveCell {
+  return { date: grid.days[0] ?? '', hour: grid.hours[0] ?? 0 }
+}
+
 export type HeatmapInteraction = {
   /** Contêiner com rolagem nos dois eixos; recebe a delegação de ponteiro. */
   scrollerRef: RefObject<HTMLDivElement | null>
@@ -163,28 +173,34 @@ export function useHeatmapInteraction(grid: HeatGrid): HeatmapInteraction {
   const anchorRef = useRef<Anchor | null>(null)
   const tooltipStateRef = useRef<HeatmapTooltipState | null>(null)
 
-  const [activeCell, setActiveCell] = useState<HeatmapActiveCell>(() => ({
-    date: grid.days[0] ?? '',
-    hour: grid.hours[0] ?? 0,
-  }))
-  const [tooltip, setTooltip] = useState<HeatmapTooltipState | null>(null)
+  const [activeCellState, setActiveCellState] = useState<GridScopedState<HeatmapActiveCell>>(
+    () => ({ grid, value: firstCell(grid) }),
+  )
+  const [tooltipState, setTooltipState] = useState<
+    GridScopedState<HeatmapTooltipState | null>
+  >(() => ({ grid, value: null }))
 
   /*
-   * Troca de bairro: reinicia a célula ativa e esconde o tooltip durante o
-   * próprio render (padrão de "ajustar estado quando a prop muda"), em vez de
-   * provocar um segundo render a partir de um efeito.
+   * Troca de bairro: a célula ativa e o tooltip pertencem à grade que estava na
+   * tela quando foram definidos. Guardar a grade junto com o estado resolve a
+   * troca durante o render, sem `setState` dentro do render — esse ajuste
+   * faria as 2160 células serem renderizadas duas vezes a cada troca.
    */
-  const [gridInUse, setGridInUse] = useState(grid)
-  if (gridInUse !== grid) {
-    setGridInUse(grid)
-    setActiveCell({ date: grid.days[0] ?? '', hour: grid.hours[0] ?? 0 })
-    setTooltip(null)
-  }
+  const activeCell = activeCellState.grid === grid ? activeCellState.value : firstCell(grid)
+  const tooltip = tooltipState.grid === grid ? tooltipState.value : null
 
-  const updateTooltip = useCallback((next: HeatmapTooltipState | null) => {
-    tooltipStateRef.current = next
-    setTooltip(next)
-  }, [])
+  const setActiveCell = useCallback(
+    (next: HeatmapActiveCell) => setActiveCellState({ grid, value: next }),
+    [grid],
+  )
+
+  const updateTooltip = useCallback(
+    (next: HeatmapTooltipState | null) => {
+      tooltipStateRef.current = next
+      setTooltipState({ grid, value: next })
+    },
+    [grid],
+  )
 
   /** Aplica a âncora atual, clampando o tooltip dentro da viewport. */
   const positionTooltip = useCallback(() => {
@@ -484,6 +500,7 @@ export function useHeatmapInteraction(grid: HeatGrid): HeatmapInteraction {
     hideTooltip,
     highlightCell,
     positionTooltip,
+    setActiveCell,
     updateTooltip,
   ])
 

@@ -19,7 +19,7 @@ const csvModules = import.meta.glob('../../data/*.csv', {
 }) as Record<string, string>
 
 function basenameWithoutExtension(path: string): string {
-  const fileName = path.split('/').pop() ?? path
+  const fileName = path.slice(path.lastIndexOf('/') + 1)
   return fileName.replace(/\.csv$/i, '')
 }
 

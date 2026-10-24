@@ -60,6 +60,17 @@ describe('parseTimestamp — formatos suportados', () => {
     })
   })
 
+  it('ISO com espaço entre data e hora, incluindo 29 de fevereiro', () => {
+    expect(parseTimestamp('2024-02-29 08:00')).toMatchObject({
+      year: 2024,
+      month: 2,
+      day: 29,
+      hour: 8,
+      minute: 0,
+    })
+    expect(parseTimestamp('2023-02-29 08:00')).toBeNull()
+  })
+
   it('YYYY-MM-DD isolado vira 00:00:00', () => {
     expect(parseTimestamp('2024-12-01')).toEqual({
       year: 2024,
@@ -122,6 +133,14 @@ describe('toHourBucket — arredondamento da hora', () => {
     expect(toHourBucket(parseTimestamp('01-dez-2024 00:00')!)).toEqual({ date: '2024-12-01', hour: 0 })
   })
 
+  it('reproduz os limites e os horários fora do :59 dos CSVs reais', () => {
+    expect(bucket('2024-12-01', '14:39:59')).toEqual({ date: '2024-12-01', hour: 14 })
+    expect(bucket('2024-12-01', '14:40:00')).toEqual({ date: '2024-12-01', hour: 15 })
+    expect(bucket('2024-12-02', '14:57:10')).toEqual({ date: '2024-12-02', hour: 15 })
+    expect(bucket('2024-12-02', '12:43:37')).toEqual({ date: '2024-12-02', hour: 13 })
+    expect(bucket('2024-12-01', '23:59:47')).toEqual({ date: '2024-12-02', hour: 0 })
+  })
+
   it('23:59 avança para a hora 0 do dia seguinte', () => {
     expect(bucket('2024-12-01', '23:59:47')).toEqual({ date: '2024-12-02', hour: 0 })
   })
@@ -162,6 +181,12 @@ describe('aritmética civil de datas', () => {
   it('enumerateIsoDays rejeita intervalo invertido', () => {
     expect(() => enumerateIsoDays('2024-12-02', '2024-12-01')).toThrow()
   })
+
+  it('addDaysIso rejeita datas fora do formato ou do calendário', () => {
+    expect(() => addDaysIso('01/12/2024', 1)).toThrow(/Invalid ISO date/)
+    expect(() => addDaysIso('2024-13-01', 1)).toThrow(/Invalid ISO date/)
+    expect(() => addDaysIso('2023-02-29', 1)).toThrow(/Invalid ISO date/)
+  })
 })
 
 describe('parseFiniteNumber', () => {
@@ -172,6 +197,12 @@ describe('parseFiniteNumber', () => {
     expect(parseFiniteNumber('0')).toBe(0)
   })
 
+  it('aceita a vírgula como separador decimal (export pt-BR)', () => {
+    expect(parseFiniteNumber('45,96')).toBe(45.96)
+    expect(parseFiniteNumber('-3,94')).toBe(-3.94)
+    expect(parseFiniteNumber('1.234,56')).toBeNull()
+  })
+
   it('rejeita valores inválidos', () => {
     expect(parseFiniteNumber('')).toBeNull()
     expect(parseFiniteNumber('   ')).toBeNull()
@@ -179,5 +210,6 @@ describe('parseFiniteNumber', () => {
     expect(parseFiniteNumber('NaN')).toBeNull()
     expect(parseFiniteNumber('Infinity')).toBeNull()
     expect(parseFiniteNumber('12abc')).toBeNull()
+    expect(parseFiniteNumber('9'.repeat(400))).toBeNull()
   })
 })

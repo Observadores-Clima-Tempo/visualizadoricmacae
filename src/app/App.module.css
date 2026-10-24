@@ -1,12 +1,23 @@
+/*
+ * A página ocupa exatamente a altura da viewport e o cartão preenche o espaço
+ * que sobra: a matriz rola dentro do próprio painel, nunca na página.
+ */
 .page {
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
   padding: var(--space-6) var(--space-4);
   background: var(--color-bg);
 }
 
 .content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   width: 100%;
-  max-width: 1180px;
+  max-width: var(--layout-max-width);
+  min-height: 0;
   margin-inline: auto;
 }
 
