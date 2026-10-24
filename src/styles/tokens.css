@@ -1,0 +1,61 @@
+:root {
+  /* Superfícies e texto */
+  --color-bg: #f1f7fc;
+  --color-surface: #ffffff;
+  --color-text: #14284e;
+  --color-text-muted: #62758f;
+  --color-border: #dce7f0;
+  --color-surface-muted: #f2f5f8;
+
+  /* Risco */
+  --risk-none-bg: #edf4fc;
+  --risk-none-fg: #14284e;
+  --risk-caution-bg: #fff348;
+  --risk-caution-fg: #14284e;
+  --risk-extreme-caution-bg: #ffba39;
+  --risk-extreme-caution-fg: #14284e;
+  --risk-danger-bg: #e87b1a;
+  --risk-danger-fg: #ffffff;
+  --risk-extreme-danger-bg: #f01828;
+  --risk-extreme-danger-fg: #ffffff;
+
+  /* Gráfico */
+  --chart-line: #e87b1a;
+  --chart-grid: #dce7f0;
+
+  /* Forma */
+  --radius-card: 12px;
+  --radius-sm: 8px;
+  --shadow-card:
+    0 1px 2px rgba(20, 40, 78, 0.06),
+    0 4px 16px rgba(20, 40, 78, 0.04);
+
+  /* Espaçamento (escala de 4px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  /* Tipografia */
+  --font-sans:
+    'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Matriz de calor */
+  --heat-cell-w: 38px;
+  --heat-cell-h: 26px;
+  --heat-gap: 2px;
+}

@@ -1,0 +1,78 @@
+/* Reset mínimo */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  margin: 0;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Foco visível consistente */
+:focus-visible {
+  outline: 2px solid rgba(20, 40, 78, 0.55);
+  outline-offset: 2px;
+}
+
+/* Layout base da página */
+.page {
+  min-height: 100vh;
+  padding: var(--space-6) var(--space-4);
+}
+
+.page__content {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.card {
+  min-height: 160px;
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: var(--space-8) var(--space-6);
+  }
+}
