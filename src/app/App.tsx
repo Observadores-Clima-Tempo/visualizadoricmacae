@@ -54,18 +54,7 @@ export function App() {
 
   const footer =
     hasReadings && activeReport ? (
-      <p className={styles.footnote}>
-        {formatCount(activeReport.accepted)} leituras ·{' '}
-        {formatCount(grid.coverage.daysWithData)} dias com dados
-        {activeReport.rejected > 0 ? (
-          <>
-            {' · '}
-            <span title="Linhas com data, hora ou índice de calor inválidos foram descartadas na importação.">
-              {formatCount(activeReport.rejected)} registros ignorados
-            </span>
-          </>
-        ) : null}
-      </p>
+      <p className={styles.footnote}>{formatCount(grid.days.length)} dias no período</p>
     ) : undefined
 
   return (

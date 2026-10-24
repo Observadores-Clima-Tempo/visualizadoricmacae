@@ -6,6 +6,8 @@
 }
 
 html {
+  background: var(--color-bg);
+  color-scheme: light;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -44,8 +46,33 @@ body {
   min-height: 100vh;
 }
 
-/* Foco visível consistente */
+/* Foco visível consistente e sempre presente (nunca `outline: none`). */
 :focus-visible {
-  outline: 2px solid rgba(20, 40, 78, 0.55);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
+}
+
+/* Texto apenas para leitores de tela (caption da matriz, rótulos etc.). */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Transições curtas por padrão; nenhuma animação para quem pediu menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

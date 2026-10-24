@@ -8,6 +8,23 @@
   overflow: auto;
   max-height: min(70vh, 720px);
   scrollbar-gutter: stable;
+  /* Barra fina e neutra: visível, mas discreta ao lado das cores de risco. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scroll-thumb) transparent;
+}
+
+.scroller::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.scroller::-webkit-scrollbar-thumb {
+  background: var(--color-scroll-thumb);
+  border-radius: 999px;
+}
+
+.scroller::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .table {
@@ -15,30 +32,38 @@
   border-collapse: separate;
   border-spacing: var(--heat-gap);
   /* 104px (datas) + 24 × largura da célula + 25 espaçamentos. */
-  width: calc(104px + 24 * var(--heat-cell-w) + 25 * var(--heat-gap));
+  width: calc(
+    var(--heat-date-col-w) + 24 * var(--heat-cell-w) + 25 * var(--heat-gap)
+  );
   margin: 0;
 }
 
-/* Descrição acessível da tabela, oculta visualmente. */
-.caption {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
+/*
+ * Cabeçalhos fixos precisam ser opacos de verdade: o `border-spacing` abre
+ * frestas de 2px entre as células e, sem a sombra sólida abaixo, as células
+ * rolando por baixo apareceriam nessas frestas. A sombra pinta a superfície do
+ * cartão em volta de cada célula de cabeçalho e fecha os vãos.
+ */
 .cornerCell,
 .hourHeader,
 .rowHeader {
   background: var(--color-surface);
+  box-shadow: 0 0 0 var(--heat-gap) var(--color-surface);
   transition:
-    background-color 80ms ease-out,
-    color 80ms ease-out;
+    background-color var(--duration-fast) ease-out,
+    color var(--duration-fast) ease-out,
+    box-shadow var(--duration-fast) ease-out;
+}
+
+/*
+ * Sombra de elevação: o hook de interação marca `data-scrolled` no contêiner
+ * quando a rolagem vertical passa de 4px. Nada de estado React por causa disso.
+ */
+.scroller[data-scrolled='true'] .cornerCell,
+.scroller[data-scrolled='true'] .hourHeader {
+  box-shadow:
+    0 0 0 var(--heat-gap) var(--color-surface),
+    var(--shadow-sticky);
 }
 
 /*
@@ -62,8 +87,8 @@
   left: 0;
   top: 0;
   z-index: 3;
-  width: 104px;
-  height: 28px;
+  width: var(--heat-date-col-w);
+  height: var(--heat-header-h);
   padding: 0 var(--space-2);
   color: var(--color-text-muted);
   font-size: var(--text-xs);
@@ -76,7 +101,7 @@
   top: 0;
   z-index: 2;
   width: var(--heat-cell-w);
-  height: 28px;
+  height: var(--heat-header-h);
   padding: 0;
   color: var(--color-text-muted);
   font-size: var(--text-xs);
@@ -92,7 +117,7 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  width: 104px;
+  width: var(--heat-date-col-w);
   height: var(--heat-cell-h);
   padding: 0 var(--space-2);
   color: var(--color-text);
@@ -118,12 +143,13 @@
 .cell {
   height: var(--heat-cell-h);
   padding: 0 var(--space-1);
-  border-radius: 4px;
+  border-radius: var(--radius-cell);
   color: var(--color-text);
-  font-size: var(--text-xs);
+  font-size: var(--heat-cell-font);
   font-variant-numeric: tabular-nums;
   text-align: center;
   vertical-align: middle;
+  transition: box-shadow var(--duration-micro) ease-out;
 }
 
 .cell[data-category='none'] {
@@ -157,8 +183,9 @@
   color: var(--color-text-muted);
 }
 
+/* Hover: anel interno sutil, sem trocar o preenchimento da faixa de risco. */
 .cell:hover {
-  box-shadow: inset 0 0 0 1px rgba(20, 40, 78, 0.35);
+  box-shadow: inset 0 0 0 1px var(--color-hover-ring);
 }
 
 /* Foco por teclado: anel interno na cor de texto, distinto do anel de hover. */
@@ -170,7 +197,8 @@
 @media (prefers-reduced-motion: reduce) {
   .cornerCell,
   .hourHeader,
-  .rowHeader {
+  .rowHeader,
+  .cell {
     transition: none;
   }
 }

@@ -54,6 +54,9 @@ const VIEWPORT_MARGIN = 8
 
 const DAYS_PER_PAGE = 7
 
+/** Rolagem vertical (px) a partir da qual o cabeçalho fixo ganha elevação. */
+const ELEVATION_THRESHOLD = 4
+
 type Anchor = {
   /** Canto superior esquerdo desejado, em coordenadas de viewport. */
   x: number
@@ -334,7 +337,22 @@ export function useHeatmapInteraction(grid: HeatGrid): HeatmapInteraction {
       endPointerInteraction()
     }
 
+    /*
+     * Sombra de elevação do cabeçalho fixo: um atributo no contêiner resolve o
+     * estado visual sem re-renderizar nenhuma linha (mesma estratégia do
+     * destaque de cabeçalhos).
+     */
+    const syncElevation = () => {
+      if (scroller.scrollTop > ELEVATION_THRESHOLD) {
+        scroller.dataset.scrolled = 'true'
+      } else {
+        delete scroller.dataset.scrolled
+      }
+    }
+
     const handleScroll = () => {
+      syncElevation()
+
       const current = tooltipStateRef.current
       if (!current) return
 
@@ -445,7 +463,11 @@ export function useHeatmapInteraction(grid: HeatGrid): HeatmapInteraction {
     table.addEventListener('focusout', handleFocusOut)
     table.addEventListener('keydown', handleKeyDown)
 
+    // O navegador pode restaurar a rolagem antes do efeito rodar.
+    syncElevation()
+
     return () => {
+      delete scroller.dataset.scrolled
       scroller.removeEventListener('pointerover', handlePointerOver)
       scroller.removeEventListener('pointermove', handlePointerMove)
       scroller.removeEventListener('pointerout', handlePointerOut)

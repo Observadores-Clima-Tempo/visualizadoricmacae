@@ -84,14 +84,6 @@
   color: var(--color-text-muted);
 }
 
-.origin {
-  color: var(--color-text);
-}
-
-.observations {
-  color: var(--color-text-muted);
-}
-
 @media (max-width: 480px) {
   .tooltip {
     max-width: 240px;

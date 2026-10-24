@@ -52,7 +52,7 @@ export function HeatmapGrid({ grid, bairroLabel }: HeatmapGridProps) {
         aria-rowcount={grid.days.length + 1}
         aria-colcount={grid.hours.length + 1}
       >
-        <caption id={HEATMAP_GRID_CAPTION_ID} className={styles.caption}>
+        <caption id={HEATMAP_GRID_CAPTION_ID} className="srOnly">
           {buildCaption(grid, bairroLabel)}
         </caption>
         <thead>
@@ -86,9 +86,7 @@ export function HeatmapGrid({ grid, bairroLabel }: HeatmapGridProps) {
           ))}
         </tbody>
       </table>
-      {tooltip ? (
-        <HeatmapTooltip cell={tooltip.cell} bairroLabel={bairroLabel} elementRef={tooltipRef} />
-      ) : null}
+      {tooltip ? <HeatmapTooltip cell={tooltip.cell} elementRef={tooltipRef} /> : null}
     </div>
   )
 }

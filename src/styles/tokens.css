@@ -6,6 +6,11 @@
   --color-text-muted: #62758f;
   --color-border: #dce7f0;
   --color-surface-muted: #f2f5f8;
+  --color-scroll-thumb: #c9d7e4;
+
+  /* Anéis de interação (neutros: nunca competem com as cores de risco) */
+  --color-hover-ring: rgba(20, 40, 78, 0.35);
+  --color-focus-ring: rgba(20, 40, 78, 0.55);
 
   /* Risco */
   --risk-none-bg: #edf4fc;
@@ -25,10 +30,17 @@
 
   /* Forma */
   --radius-card: 12px;
+  --radius-cell: 4px;
   --radius-sm: 8px;
   --shadow-card:
     0 1px 2px rgba(20, 40, 78, 0.06),
     0 4px 16px rgba(20, 40, 78, 0.04);
+  /* Elevação do cabeçalho fixo da matriz, só a partir de 4px de rolagem. */
+  --shadow-sticky: 0 6px 12px -6px rgba(20, 40, 78, 0.28);
+
+  /* Movimento */
+  --duration-fast: 120ms;
+  --duration-micro: 90ms;
 
   /* Espaçamento (escala de 4px) */
   --space-1: 4px;
@@ -54,8 +66,14 @@
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* Matriz de calor */
+  /*
+   * Matriz de calor. A célula nunca desce de 34px de largura nem de 10px de
+   * fonte para "caber": a rolagem horizontal é o comportamento correto.
+   */
   --heat-cell-w: 38px;
   --heat-cell-h: 26px;
+  --heat-cell-font: 11px;
   --heat-gap: 2px;
+  --heat-date-col-w: 104px;
+  --heat-header-h: 28px;
 }

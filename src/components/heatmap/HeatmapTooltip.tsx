@@ -10,24 +10,18 @@ import styles from './HeatmapTooltip.module.css'
 
 type HeatmapTooltipProps = {
   cell: HeatCell
-  bairroLabel: string
   /** Nó posicionado imperativamente por `useHeatmapInteraction`. */
   elementRef: RefObject<HTMLDivElement | null>
 }
 
-function observationLabel(count: number): string {
-  if (count <= 0) return 'Nenhuma observação válida'
-  return count === 1 ? '1 observação' : `${count} observações`
-}
-
 /**
- * Tooltip único da matriz: data, hora, valor, categoria, bairro e observações.
+ * Tooltip único da matriz: data, hora, valor e categoria de risco.
  *
  * É complementar à célula — todo o conteúdo também existe no `aria-label` —,
  * por isso fica `aria-hidden` e nunca captura o ponteiro. A posição vem do hook
  * que o renderiza; aqui só se resolve cor de categoria por `data-category`.
  */
-export function HeatmapTooltip({ cell, bairroLabel, elementRef }: HeatmapTooltipProps) {
+export function HeatmapTooltip({ cell, elementRef }: HeatmapTooltipProps) {
   const category = classifyHeatIndex(cell.heatIndexC)
   const hasData = category.id !== 'unknown'
 
@@ -44,10 +38,6 @@ export function HeatmapTooltip({ cell, bairroLabel, elementRef }: HeatmapTooltip
         <span className={styles.badge} data-category={category.id}>
           {category.label}
         </span>
-      </p>
-      <p className={styles.origin}>Bairro: {bairroLabel}</p>
-      <p className={styles.observations}>
-        {hasData ? observationLabel(cell.observationCount) : 'Nenhuma observação válida'}
       </p>
     </div>
   )

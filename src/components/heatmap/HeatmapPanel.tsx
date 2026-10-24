@@ -25,8 +25,7 @@ export function HeatmapPanel({ actions, footer, children }: HeatmapPanelProps) {
             Mapa de calor por hora e dia
           </h2>
           <p className={styles.subtitle}>
-            Índice de calor (°C) no bairro selecionado. Compare vários dias e identifique os
-            horários de maior risco.
+            Índice de calor (°C) no bairro selecionado. 
           </p>
         </div>
         {actions ? <div className={styles.actions}>{actions}</div> : null}
