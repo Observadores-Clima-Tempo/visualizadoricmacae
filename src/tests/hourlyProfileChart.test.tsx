@@ -8,8 +8,8 @@ import type { HourlyProfilePoint } from '@/domain/heatIndexAggregations'
  * O `ResponsiveContainer` do Recharts mede o elemento pai e, em jsdom, essa
  * medição é sempre 0×0 — por isso o SVG não é renderizado aqui e nenhum teste
  * depende da geometria do gráfico. O que se verifica é tudo o que é HTML: o
- * selo do pico, o resumo textual e a tabela oculta (a fonte acessível dos
- * mesmos números).
+ * resumo textual do pico e a tabela oculta (a fonte acessível dos mesmos
+ * números).
  */
 function profileFrom(values: readonly (number | null)[]): HourlyProfilePoint[] {
   return values.map((average, hour) => ({
@@ -19,7 +19,7 @@ function profileFrom(values: readonly (number | null)[]): HourlyProfilePoint[] {
   }))
 }
 
-/** Hora 14 como pico (34,25 °C) e as demais horas em 30 °C. */
+/** Hora 14 como pico (34,2 °C) e as demais horas em 30 °C. */
 const FIXTURE = profileFrom(
   Array.from({ length: 24 }, (_unused, hour) => (hour === 14 ? 34.2 : 30)),
 )
@@ -31,18 +31,14 @@ const WITH_GAP = profileFrom(
 )
 
 describe('HourlyProfileChart — cartão', () => {
-  it('mostra título, subtítulo e o selo textual do pico', () => {
+  it('mostra só o título, sem subtítulo nem selo do pico', () => {
     render(<HourlyProfileChart profile={FIXTURE} bairroLabel="Trapiche" />)
 
     expect(screen.getByRole('heading', { name: 'Média horária do período' })).toBeTruthy()
     expect(
-      screen.getByText('Perfil horário médio do índice de calor nos dias selecionados.'),
-    ).toBeTruthy()
-
-    // O selo não é cortado: é HTML, com hora e valor em um único texto legível.
-    const peak = screen.getByText(/^Pico médio:/)
-    expect(peak.tagName).toBe('P')
-    expect(peak.textContent).toBe('Pico médio: 14h · 34,2 °C')
+      screen.queryByText('Perfil horário médio do índice de calor nos dias selecionados.'),
+    ).toBeNull()
+    expect(screen.queryByText(/^Pico médio:/)).toBeNull()
   })
 
   it('descreve o pico em texto para leitores de tela', () => {
@@ -95,7 +91,7 @@ describe('HourlyProfileChart — horas sem dado', () => {
 describe('HourlyProfileChart — perfil vazio', () => {
   const emptyProfile = profileFrom(Array.from({ length: 24 }, () => null))
 
-  it('mostra o estado vazio, sem o selo do pico', () => {
+  it('mostra o estado vazio, sem o resumo do pico', () => {
     render(<HourlyProfileChart profile={emptyProfile} bairroLabel="Mirante" />)
 
     expect(screen.getByRole('status').textContent).toContain('Sem dados no período')

@@ -1,5 +1,3 @@
-import { CalendarDays, Clock, Thermometer, Timer } from 'lucide-react'
-
 import { formatDayMonth, formatFullDate, formatHourLabel } from '@/components/heatmap/heatmapLabels'
 import type { DangerStreakSummary, PeriodSummary } from '@/domain/heatIndexSummary'
 import { SummaryCard } from './SummaryCard'
@@ -23,19 +21,6 @@ function formatInteger(value: number): string {
   return INTEGER.format(value)
 }
 
-/** `01/12/2024 – 28/02/2025 · 90 dias · Trapiche` */
-function formatContext(days: readonly string[], bairroLabel: string): string {
-  const first = days[0]
-  const last = days[days.length - 1]
-  const period =
-    first !== undefined && last !== undefined
-      ? `${formatFullDate(first)} – ${formatFullDate(last)}`
-      : 'Período indisponível'
-  const dayCount = days.length === 1 ? '1 dia' : `${formatInteger(days.length)} dias`
-
-  return `${period} · ${dayCount} · ${bairroLabel}`
-}
-
 /** Mesmo dia: `19/01/2025 · 12h → 20h`; entre dias: `23/01 22h → 24/01 06h`. */
 function formatStreak(streak: DangerStreakSummary): string {
   const startHour = formatHourLabel(streak.start.hour)
@@ -50,17 +35,16 @@ function formatStreak(streak: DangerStreakSummary): string {
 
 export type SummaryPanelProps = {
   summary: PeriodSummary
-  bairroLabel: string
-  days: readonly string[]
 }
 
 /**
  * Coluna lateral com o resumo do período do bairro ativo.
  *
- * Não calcula nem formata datas: recebe o `PeriodSummary` pronto, os dias que
- * a grade cobre e o rótulo do bairro. Sem botões, filtros ou seletores.
+ * Não calcula nem formata datas além do que exibe: recebe o `PeriodSummary`
+ * pronto. Sem subtítulo, ícones, botões, filtros ou seletores — os quatro
+ * cartões dividem a altura do painel e sempre cabem sem rolagem.
  */
-export function SummaryPanel({ summary, bairroLabel, days }: SummaryPanelProps) {
+export function SummaryPanel({ summary }: SummaryPanelProps) {
   const { max, dangerHours, longestDangerStreak, dangerDays } = summary
 
   const hasHours = dangerHours.validHours > 0
@@ -68,16 +52,12 @@ export function SummaryPanel({ summary, bairroLabel, days }: SummaryPanelProps) 
 
   return (
     <aside className={styles.panel} aria-labelledby={SUMMARY_PANEL_TITLE_ID}>
-      <header className={styles.header}>
-        <h2 id={SUMMARY_PANEL_TITLE_ID} className={styles.title}>
-          Resumo do período
-        </h2>
-        <p className={styles.context}>{formatContext(days, bairroLabel)}</p>
-      </header>
+      <h2 id={SUMMARY_PANEL_TITLE_ID} className={styles.title}>
+        Resumo
+      </h2>
 
       <div className={styles.cards}>
         <SummaryCard
-          icon={<Thermometer size={18} />}
           title="IC máximo registrado"
           value={max === null ? '—' : formatDecimal(max.value)}
           unit={max === null ? undefined : '°C'}
@@ -89,14 +69,12 @@ export function SummaryPanel({ summary, bairroLabel, days }: SummaryPanelProps) 
         />
 
         <SummaryCard
-          icon={<Clock size={18} />}
           title="Horas em Perigo"
           value={hasHours ? formatInteger(dangerHours.count) : '—'}
           unit={hasHours ? 'h' : undefined}
         />
 
         <SummaryCard
-          icon={<Timer size={18} />}
           title="Maior período consecutivo em Perigo"
           value={formatInteger(longestDangerStreak?.hours ?? 0)}
           unit="h"
@@ -108,7 +86,6 @@ export function SummaryPanel({ summary, bairroLabel, days }: SummaryPanelProps) 
         />
 
         <SummaryCard
-          icon={<CalendarDays size={18} />}
           title="Dias com ocorrência de Perigo"
           value={hasDays ? formatInteger(dangerDays.count) : '—'}
           unit={hasDays ? 'dias' : undefined}

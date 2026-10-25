@@ -8,13 +8,17 @@
   height: 100vh;
   height: 100dvh;
   padding: var(--space-6) var(--space-4);
+  /* A página nunca rola: quem rola é a matriz, a coluna de resumo (no
+     empilhado, a própria `.content`). */
+  overflow: hidden;
   background: var(--color-bg);
 }
 
 /*
  * Duas colunas e duas linhas: resumo à esquerda (280px), mapa ocupando a sobra
- * e o gráfico do perfil horário na largura total, abaixo dos dois. A linha do
- * mapa absorve/cede altura; a do gráfico é `auto`, ditada pelo cartão.
+ * e o gráfico do perfil horário na largura total, abaixo dos dois. O mapa é o
+ * destaque da página, então a linha do gráfico fica com 40% da altura dele
+ * (`1fr` vs `0.4fr`) e as duas linhas sempre preenchem a área disponível.
  */
 .content {
   display: grid;
@@ -22,9 +26,8 @@
   grid-template-areas:
     'summary map'
     'chart chart';
-  grid-template-columns: 280px minmax(0, 1fr);
-  /* O piso de 180px impede que o cartão do gráfico zere a área do mapa. */
-  grid-template-rows: minmax(180px, 1fr) auto;
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 0.4fr);
   gap: var(--space-4);
   width: 100%;
   max-width: var(--layout-max-width);
@@ -44,11 +47,13 @@
   min-height: 0;
 }
 
-/* Envoltório do gráfico: só posiciona o cartão na segunda linha do grid. */
+/* Envoltório do gráfico: posiciona o cartão na segunda linha e o estica nela. */
 .chartSlot {
-  display: block;
+  display: flex;
+  flex-direction: column;
   grid-area: chart;
   min-width: 0;
+  min-height: 0;
 }
 
 /* Erro de carregamento: sem resumo, o aviso ocupa a largura inteira. */
@@ -62,11 +67,6 @@
   grid-area: map;
   min-width: 0;
   min-height: 0;
-}
-
-.footnote {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
 }
 
 /*
@@ -91,13 +91,19 @@
 
   /*
    * Empilhado, quem rola é a coluna inteira: o resumo cresce naturalmente e
-   * não abre uma segunda rolagem interna. `min-height: auto` desfaz o
-   * `min-height: 0` da coluna lateral, que encolheria o cartão à altura do
-   * título dentro de uma linha `auto` do grid.
+   * não abre uma segunda rolagem interna. `overflow` precisa voltar a
+   * `visible` nos dois eixos (visible + hidden vira `auto` e o cartão vira um
+   * contêiner rolável), e `min-height: auto` desfaz o `0` da coluna lateral,
+   * que encolheria o cartão à altura do título dentro de uma linha `auto`.
    */
   .content > aside {
     min-height: auto;
-    overflow-y: visible;
+    overflow: visible;
+  }
+
+  /* O cartão do gráfico também volta a ter altura própria (linha `auto`). */
+  .chartSlot {
+    min-height: auto;
   }
 }
 

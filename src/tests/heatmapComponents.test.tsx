@@ -99,22 +99,21 @@ describe('HeatmapGrid', () => {
 })
 
 describe('HeatmapPanel', () => {
-  it('renderiza título, subtítulo, ações e rodapé', () => {
+  it('renderiza título, ações e conteúdo, sem subtítulo', () => {
     const markup = renderToStaticMarkup(
-      <HeatmapPanel actions={<button type="button">Bairro</button>} footer="90 dias">
+      <HeatmapPanel actions={<button type="button">Bairro</button>}>
         <span>grade</span>
       </HeatmapPanel>,
     )
 
     expect(markup).toContain('Mapa de calor por hora e dia')
-    expect(markup).toContain('Índice de calor (°C) no bairro selecionado')
     expect(markup).toContain('>Bairro</button>')
     expect(markup).toContain('>grade<')
-    expect(markup).toContain('90 dias')
     expect(markup).toContain('id="heatmap-panel-title"')
+    expect(markup).not.toContain('Índice de calor (°C) no bairro selecionado')
   })
 
-  it('não renderiza áreas opcionais quando não recebem conteúdo', () => {
+  it('não renderiza rodapé nem áreas opcionais vazias', () => {
     const markup = renderToStaticMarkup(
       <HeatmapPanel>
         <span>grade</span>

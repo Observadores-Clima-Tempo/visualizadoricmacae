@@ -4,7 +4,6 @@ import {
   Line,
   LineChart,
   ReferenceDot,
-  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,7 +13,6 @@ import {
 import { formatHourLabel } from '@/components/heatmap/heatmapLabels'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { findProfilePeak, type HourlyProfilePoint } from '@/domain/heatIndexAggregations'
-import { HEAT_INDEX_THRESHOLDS } from '@/domain/heatIndexCategories'
 import styles from './HourlyProfileChart.module.css'
 
 /** Id estável do título: não reutiliza os ids do mapa nem do resumo. */
@@ -46,10 +44,8 @@ type ProfileChartPoint = {
 }
 
 /**
- * Domínio do eixo Y: folga de ~1 °C acima e abaixo do que é desenhado.
- *
- * A linha de referência de Perigo entra no cálculo para nunca ser descartada
- * (`ifOverflow: 'discard'` do Recharts) quando o bairro fica abaixo de 41 °C.
+ * Domínio do eixo Y: só os dados, com folga de ~1 °C em cima e embaixo.
+ * Assim a curva ocupa a maior parte da área do gráfico.
  */
 function resolveYDomain(profile: readonly HourlyProfilePoint[]): [number, number] {
   const values = profile
@@ -60,9 +56,8 @@ function resolveYDomain(profile: readonly HourlyProfilePoint[]): [number, number
 
   const min = Math.min(...values)
   const max = Math.max(...values)
-  const top = Math.max(max, HEAT_INDEX_THRESHOLDS.danger)
 
-  return [Math.floor(min) - 1, Math.ceil(top) + 1]
+  return [Math.floor(min) - 1, Math.ceil(max) + 1]
 }
 
 type ProfileTooltipProps = {
@@ -105,8 +100,7 @@ export type HourlyProfileChartProps = {
  * O gráfico é decorativo (`aria-hidden`) e não entra na ordem de tabulação: os
  * mesmos números ficam disponíveis na tabela oculta e no resumo textual, que
  * são lidos por leitores de tela.
- */
-export function HourlyProfileChart({ profile, bairroLabel }: HourlyProfileChartProps) {
+ */export function HourlyProfileChart({ profile, bairroLabel }: HourlyProfileChartProps) {
   const data = useMemo<ProfileChartPoint[]>(
     () =>
       profile.map((point) => ({
@@ -123,24 +117,9 @@ export function HourlyProfileChart({ profile, bairroLabel }: HourlyProfileChartP
 
   return (
     <section className={styles.card} aria-labelledby={HOURLY_PROFILE_TITLE_ID}>
-      <header className={styles.header}>
-        <div className={styles.heading}>
-          <h2 id={HOURLY_PROFILE_TITLE_ID} className={styles.title}>
-            Média horária do período
-          </h2>
-          <p className={styles.subtitle}>
-            Perfil horário médio do índice de calor nos dias selecionados.
-          </p>
-        </div>
-        {peak === null ? null : (
-          <p className={styles.peak}>
-            Pico médio:{' '}
-            <strong className={styles.peakValue}>
-              {formatHourLabel(peak.hour)} · {formatTemperature(peak.average)}
-            </strong>
-          </p>
-        )}
-      </header>
+      <h2 id={HOURLY_PROFILE_TITLE_ID} className={styles.title}>
+        Média horária do período
+      </h2>
 
       {peak === null ? (
         <div className={styles.empty}>
@@ -185,16 +164,6 @@ export function HourlyProfileChart({ profile, bairroLabel }: HourlyProfileChartP
                   filterNull={false}
                   isAnimationActive={false}
                   cursor={{ stroke: 'var(--color-border)', strokeDasharray: '4 4' }}
-                />
-                <ReferenceLine
-                  y={HEAT_INDEX_THRESHOLDS.danger}
-                  strokeDasharray="4 4"
-                  className={styles.reference}
-                  label={{
-                    value: 'Perigo',
-                    position: 'insideTopRight',
-                    className: styles.referenceLabel,
-                  }}
                 />
                 <Line
                   type="monotone"

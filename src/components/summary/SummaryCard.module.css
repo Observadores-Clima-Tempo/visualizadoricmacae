@@ -1,36 +1,19 @@
 /*
  * Cartão de indicador: superfície neutra sobre o painel branco, sem nenhuma
- * cor de risco no fundo. A altura mínima mantém os quatro cartões alinhados.
+ * cor de risco no fundo. Não tem altura própria — cada cartão ocupa uma linha
+ * `1fr` do painel, então os quatro sempre cabem na altura disponível.
  */
 .card {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  min-height: 104px;
-  padding: var(--space-4);
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 0;
+  padding: var(--space-3) var(--space-4);
+  overflow: hidden;
   background: var(--color-surface-muted);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-}
-
-.icon {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  color: var(--color-text-muted);
-  background: var(--risk-none-bg);
-  border-radius: 50%;
-}
-
-.body {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
 }
 
 .title {
@@ -47,7 +30,7 @@
   align-items: baseline;
   gap: var(--space-1);
   color: var(--color-text);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
@@ -66,6 +49,18 @@
   font-size: var(--text-xs);
   line-height: 1.4;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* Janela curta: cartões mais apertados para os quatro continuarem visíveis. */
+@media (max-height: 720px) {
+  .card {
+    gap: 2px;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .value {
+    font-size: var(--text-lg);
+  }
 }

@@ -62,11 +62,6 @@ export function App() {
     })
   }, [])
 
-  const footer =
-    hasReadings && activeReport ? (
-      <p className={styles.footnote}>{formatCount(grid.days.length)} dias no período</p>
-    ) : undefined
-
   return (
     <div className={styles.page}>
       <main className={`${styles.content}${error ? ` ${styles.contentSingle}` : ''}`}>
@@ -79,11 +74,7 @@ export function App() {
           />
         ) : (
           <>
-            <SummaryPanel
-              summary={summary}
-              bairroLabel={activeBairroLabel}
-              days={grid.days}
-            />
+            <SummaryPanel summary={summary} />
             <HeatmapPanel
               actions={
                 <NeighborhoodSelect
@@ -92,7 +83,6 @@ export function App() {
                   onChange={handleBairroChange}
                 />
               }
-              footer={footer}
             >
               {hasReadings ? (
                 <HeatmapGrid grid={grid} bairroLabel={activeBairroLabel} />

@@ -23,13 +23,7 @@ function reading(date: string, hour: number, heatIndexC: number): HeatIndexReadi
 function renderPanel(readings: HeatIndexReading[], days: string[]) {
   const grid = buildHeatGrid(readings, { days, aggregation: 'mean' })
 
-  return renderToStaticMarkup(
-    <SummaryPanel
-      summary={computePeriodSummary(grid)}
-      bairroLabel="Trapiche"
-      days={grid.days}
-    />,
-  )
+  return renderToStaticMarkup(<SummaryPanel summary={computePeriodSummary(grid)} />)
 }
 
 const FIXTURE_READINGS = [
@@ -45,11 +39,12 @@ const FIXTURE_DAYS = ['2025-01-18', '2025-01-19', '2025-01-20']
 describe('SummaryPanel — valores formatados', () => {
   const markup = renderPanel(FIXTURE_READINGS, FIXTURE_DAYS)
 
-  it('renderiza o título e a linha de contexto do período', () => {
-    expect(markup).toContain('Resumo do período')
-    expect(markup).toContain('18/01/2025 – 20/01/2025 · 3 dias · Trapiche')
+  it('renderiza só o título, sem a linha de contexto do período', () => {
+    expect(markup).toContain('>Resumo<')
     expect(markup).toContain('id="summary-panel-title"')
     expect(markup).not.toContain('id="heatmap-panel-title"')
+    expect(markup).not.toContain('18/01/2025 – 20/01/2025')
+    expect(markup).not.toContain('3 dias · Trapiche')
   })
 
   it('renderiza os quatro títulos dos cartões', () => {
@@ -106,7 +101,6 @@ describe('SummaryPanel — estado sem dado', () => {
   it('usa placeholders em vez de inventar valores', () => {
     expect(markup).toContain('Sem dados no período')
     expect(markup).toContain('Nenhuma hora em Perigo no período')
-    expect(markup).toContain('23/01/2025 – 24/01/2025 · 2 dias · Trapiche')
   })
 
   it('mostra o travessão nos cartões sem medição', () => {
