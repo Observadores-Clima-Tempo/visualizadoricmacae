@@ -10,9 +10,10 @@ export default defineConfig({
     },
   },
   build: {
-    // A V1 embute os CSVs (~780 kB) no bundle único; o limite padrão de 500 kB
-    // só geraria ruído. O tamanho real é registrado no README.
-    chunkSizeWarningLimit: 1200,
+    // A V1 embute os CSVs (~780 kB) e a V2 soma o Recharts ao bundle único;
+    // o limite padrão de 500 kB só geraria ruído. O tamanho real é
+    // registrado no README.
+    chunkSizeWarningLimit: 1600,
   },
   test: {
     environment: 'jsdom',

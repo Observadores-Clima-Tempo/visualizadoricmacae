@@ -11,52 +11,38 @@
 }
 
 /*
- * Cabeçalho: título/subtítulo à esquerda, seletor à direita, alinhados pela
- * base. O padding de 20px em cima e 16px embaixo soma os 16px de respiro até a
- * grade (o `body` não adiciona padding no topo). A divisória de 1px separa o
- * cabeçalho do corpo rolável — a matriz rola internamente (70vh).
+ * Cabeçalho compacto: só o título à esquerda e o seletor à direita, alinhados
+ * pelo centro. Cada pixel economizado aqui vira linha de dias na matriz — ela
+ * é quem rola internamente.
  */
 .header {
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-5) var(--space-6) var(--space-4);
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-6);
   border-bottom: 1px solid var(--color-border);
 }
 
-.heading {
-  display: flex;
-  flex: 1 1 320px;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
 .title {
+  flex: 1 1 auto;
+  min-width: 0;
   color: var(--color-text);
   font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   line-height: 1.25;
 }
 
-.subtitle {
-  max-width: 62ch;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: 1.45;
-}
-
 .actions {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 
 /*
  * A matriz gerencia a própria rolagem: aqui só se impede overflow do cartão e
- * se entrega ao conteúdo toda a altura que sobrar entre cabeçalho e rodapé.
+ * se entrega ao conteúdo toda a altura que sobrar abaixo do cabeçalho.
  */
 .body {
   display: flex;
@@ -64,15 +50,7 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  padding: 0 var(--space-6) var(--space-6);
-}
-
-.footer {
-  flex: 0 0 auto;
-  padding: var(--space-3) var(--space-6) var(--space-5);
-  border-top: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
+  padding: 0 var(--space-4) var(--space-4);
 }
 
 /*
@@ -86,10 +64,6 @@
     gap: var(--space-3);
   }
 
-  .heading {
-    flex: 1 1 auto;
-  }
-
   .actions {
     align-self: flex-start;
   }
@@ -98,14 +72,10 @@
 /* Em telas estreitas o cartão encolhe o padding para sobrar área para a matriz. */
 @media (max-width: 767px) {
   .header {
-    padding: var(--space-4);
+    padding: var(--space-3) var(--space-4);
   }
 
   .body {
     padding: 0 var(--space-4) var(--space-4);
-  }
-
-  .footer {
-    padding: var(--space-3) var(--space-4) var(--space-4);
   }
 }

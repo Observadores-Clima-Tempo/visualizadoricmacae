@@ -1,0 +1,148 @@
+/*
+ * Cartão do perfil horário: ocupa a largura total na segunda linha do grid da
+ * página e se estica nela — a linha é que define a altura (40% da linha do
+ * mapa), e o gráfico fica com tudo o que sobra abaixo do título.
+ */
+.card {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.title {
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+}
+
+/*
+ * O gráfico é quem absorve a altura da linha (e não uma prop): `.plot` estica e
+ * o `ResponsiveContainer` mede 100% dele.
+ */
+.plot {
+  flex: 1;
+  min-height: 0;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+  /* Cor da série: linha e pontos usam `currentColor`. */
+  color: var(--chart-line);
+}
+
+.empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Grade: apenas linhas horizontais, na cor de grade do tema. */
+.chart :global(.recharts-cartesian-grid-horizontal line) {
+  stroke: var(--chart-grid);
+}
+
+/* Eixos: sem linha de eixo tracejada por padrão; texto em tom discreto. */
+.chart :global(.recharts-cartesian-axis-tick-value) {
+  fill: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.chart :global(.recharts-cartesian-axis-line) {
+  stroke: var(--chart-grid);
+}
+
+.axisUnit {
+  fill: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+/* Tooltip em HTML: mesma linguagem dos demais cartões. */
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 96px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.tooltipHour {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.tooltipValue {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.tooltipEmpty {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.tooltipDays {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 767px) {
+  .card {
+    padding: var(--space-4);
+  }
+}
+
+/*
+ * Empilhado (a página deixa de ter duas linhas), o cartão volta a ter altura
+ * própria: o gráfico recebe uma altura fixa em vez de esticar. `min-height:
+ * auto` desfaz o `0` da base, que colapsaria a linha `auto` do grid.
+ */
+@media (max-width: 1199px) {
+  .card {
+    flex: 0 0 auto;
+    min-height: auto;
+  }
+
+  .plot,
+  .empty {
+    flex: 0 0 auto;
+    height: 240px;
+    min-height: 240px;
+  }
+}
+
+/*
+ * Viewport curta: o cartão aperta os paddings e, no empilhado, o gráfico cede
+ * altura, para que mapa, resumo e gráfico continuem cabendo na página.
+ */
+@media (max-height: 720px) {
+  .card {
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-5) var(--space-2);
+  }
+}
+
+@media (max-width: 1199px) and (max-height: 720px) {
+  .plot,
+  .empty {
+    height: 200px;
+    min-height: 200px;
+  }
+}
