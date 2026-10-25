@@ -1,0 +1,176 @@
+/*
+ * Cartão do perfil horário: ocupa a largura total na segunda linha do grid da
+ * página e não tem rolagem própria — a altura do gráfico é fixa e cabe no
+ * espaço reservado pelo layout.
+ */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.heading {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.title {
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+}
+
+.subtitle {
+  max-width: 62ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+
+/*
+ * Selo textual do pico: HTML, nunca texto dentro do SVG. `nowrap` garante que
+ * hora e valor não sejam cortados nas extremidades do cartão.
+ */
+.peak {
+  flex: 0 0 auto;
+  padding: var(--space-1) var(--space-3);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.peakValue {
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+/*
+ * A altura do gráfico vem do CSS (e não de uma prop) para que a media query de
+ * altura possa reduzir a área sem empurrar o mapa para altura zero.
+ */
+.plot {
+  height: 240px;
+  min-height: 0;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+  /* Cor da série: linha e pontos usam `currentColor`. */
+  color: var(--chart-line);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 240px;
+}
+
+/* Grade: apenas linhas horizontais, na cor de grade do tema. */
+.chart :global(.recharts-cartesian-grid-horizontal line) {
+  stroke: var(--chart-grid);
+}
+
+/* Eixos: sem linha de eixo tracejada por padrão; texto em tom discreto. */
+.chart :global(.recharts-cartesian-axis-tick-value) {
+  fill: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.chart :global(.recharts-cartesian-axis-line) {
+  stroke: var(--chart-grid);
+}
+
+/* Linha de referência de Perigo (41 °C) e seu rótulo. */
+.reference :global(.recharts-reference-line-line) {
+  stroke: var(--color-text-muted);
+}
+
+.referenceLabel {
+  fill: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.axisUnit {
+  fill: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+/* Tooltip em HTML: mesma linguagem dos demais cartões. */
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 96px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.tooltipHour {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.tooltipValue {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.tooltipEmpty {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.tooltipDays {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 767px) {
+  .card {
+    padding: var(--space-4);
+  }
+}
+
+/*
+ * Viewport curta: o gráfico cede altura (240 -> 180 px) e o cartão aperta os
+ * paddings, para que mapa, resumo e gráfico continuem cabendo na página.
+ */
+@media (max-height: 720px) {
+  .plot,
+  .empty {
+    height: 180px;
+    min-height: 180px;
+  }
+
+  .card {
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5) var(--space-3);
+  }
+}

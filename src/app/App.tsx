@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { HourlyProfileChart } from '@/components/chart/HourlyProfileChart'
 import { NeighborhoodSelect } from '@/components/controls/NeighborhoodSelect'
 import { HeatmapGrid } from '@/components/heatmap/HeatmapGrid'
 import { HeatmapPanel } from '@/components/heatmap/HeatmapPanel'
 import { SummaryPanel } from '@/components/summary/SummaryPanel'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { buildHourlyProfile } from '@/domain/heatIndexAggregations'
 import type { AggregationMode } from '@/domain/heatIndexGrid'
 import { computePeriodSummary } from '@/domain/heatIndexSummary'
 import type { BairroId } from '@/domain/heatIndexTypes'
@@ -39,8 +41,10 @@ export function App() {
   const hasReadings = activeReport !== null && activeReport.readings > 0
 
   // Mesma referência de `grid` durante toda a troca de bairro: a grade é
-  // memoizada pelo hook e o resumo nunca a recria.
+  // memoizada pelo hook e o resumo nunca a recria. O perfil horário segue a
+  // mesma regra para não remontar o gráfico a cada render.
   const summary = useMemo(() => computePeriodSummary(grid), [grid])
+  const hourlyProfile = useMemo(() => buildHourlyProfile(grid), [grid])
 
   useEffect(() => {
     document.title =
@@ -104,6 +108,9 @@ export function App() {
                 />
               )}
             </HeatmapPanel>
+            <div className={styles.chartSlot}>
+              <HourlyProfileChart profile={hourlyProfile} bairroLabel={activeBairroLabel} />
+            </div>
           </>
         )}
       </main>
