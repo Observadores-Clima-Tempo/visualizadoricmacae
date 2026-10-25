@@ -1,0 +1,61 @@
+/*
+ * Coluna lateral: o próprio cartão branco é o `<aside>`. Ele ocupa a altura da
+ * linha do grid e rola sozinho quando os quatro cartões não couberem — a
+ * página nunca rola.
+ */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-5);
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.header {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  color: var(--color-text);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: 1.25;
+}
+
+.context {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/*
+ * Empilhado (768–1199px), o resumo fica abaixo do mapa e os cartões vão para
+ * um 2×2 para não somar altura demais à página.
+ */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .panel {
+    padding: var(--space-4);
+  }
+}

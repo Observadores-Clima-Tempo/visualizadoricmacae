@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { NeighborhoodSelect } from '@/components/controls/NeighborhoodSelect'
 import { HeatmapGrid } from '@/components/heatmap/HeatmapGrid'
 import { HeatmapPanel } from '@/components/heatmap/HeatmapPanel'
+import { SummaryPanel } from '@/components/summary/SummaryPanel'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import type { AggregationMode } from '@/domain/heatIndexGrid'
+import { computePeriodSummary } from '@/domain/heatIndexSummary'
 import type { BairroId } from '@/domain/heatIndexTypes'
 import { useHeatIndexData } from '@/hooks/useHeatIndexData'
 import styles from './App.module.css'
@@ -36,6 +38,10 @@ export function App() {
   const activeReport = reports.find((report) => report.bairroId === activeBairroId) ?? null
   const hasReadings = activeReport !== null && activeReport.readings > 0
 
+  // Mesma referência de `grid` durante toda a troca de bairro: a grade é
+  // memoizada pelo hook e o resumo nunca a recria.
+  const summary = useMemo(() => computePeriodSummary(grid), [grid])
+
   useEffect(() => {
     document.title =
       activeBairroLabel === ''
@@ -59,7 +65,7 @@ export function App() {
 
   return (
     <div className={styles.page}>
-      <main className={styles.content}>
+      <main className={`${styles.content}${error ? ` ${styles.contentSingle}` : ''}`}>
         {error ? (
           <ErrorState
             title="Não foi possível carregar os dados"
@@ -68,30 +74,37 @@ export function App() {
             onAction={retry}
           />
         ) : (
-          <HeatmapPanel
-            actions={
-              <NeighborhoodSelect
-                bairros={bairros}
-                value={activeBairroId}
-                onChange={handleBairroChange}
-              />
-            }
-            footer={footer}
-          >
-            {hasReadings ? (
-              <HeatmapGrid grid={grid} bairroLabel={activeBairroLabel} />
-            ) : (
-              <EmptyState
-                title="Nenhum registro válido para este bairro"
-                description="Nenhuma linha deste CSV gerou uma leitura de índice de calor utilizável."
-                note={
-                  activeReport && activeReport.rejected > 0
-                    ? `${formatCount(activeReport.rejected)} registros ignorados por conterem dados inválidos.`
-                    : undefined
-                }
-              />
-            )}
-          </HeatmapPanel>
+          <>
+            <SummaryPanel
+              summary={summary}
+              bairroLabel={activeBairroLabel}
+              days={grid.days}
+            />
+            <HeatmapPanel
+              actions={
+                <NeighborhoodSelect
+                  bairros={bairros}
+                  value={activeBairroId}
+                  onChange={handleBairroChange}
+                />
+              }
+              footer={footer}
+            >
+              {hasReadings ? (
+                <HeatmapGrid grid={grid} bairroLabel={activeBairroLabel} />
+              ) : (
+                <EmptyState
+                  title="Nenhum registro válido para este bairro"
+                  description="Nenhuma linha deste CSV gerou uma leitura de índice de calor utilizável."
+                  note={
+                    activeReport && activeReport.rejected > 0
+                      ? `${formatCount(activeReport.rejected)} registros ignorados por conterem dados inválidos.`
+                      : undefined
+                  }
+                />
+              )}
+            </HeatmapPanel>
+          </>
         )}
       </main>
     </div>

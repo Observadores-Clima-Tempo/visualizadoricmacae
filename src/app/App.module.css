@@ -11,19 +11,62 @@
   background: var(--color-bg);
 }
 
+/*
+ * Duas colunas: resumo à esquerda (280px) e mapa ocupando a sobra. As áreas
+ * nomeadas deixam a ordem explícita no empilhamento.
+ */
 .content {
-  display: flex;
+  display: grid;
   flex: 1;
-  flex-direction: column;
+  grid-template-areas: 'summary map';
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: var(--space-4);
   width: 100%;
   max-width: var(--layout-max-width);
   min-height: 0;
   margin-inline: auto;
 }
 
+.content > aside {
+  grid-area: summary;
+  min-width: 0;
+  min-height: 0;
+}
+
+.content > section {
+  grid-area: map;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Erro de carregamento: sem resumo, o aviso ocupa a largura inteira. */
+.contentSingle {
+  grid-template-areas: 'map';
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.contentSingle > div {
+  grid-area: map;
+  min-width: 0;
+  min-height: 0;
+}
+
 .footnote {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
+}
+
+/*
+ * Abaixo de 1200px o resumo desce: o mapa fica na primeira linha e a coluna
+ * de resumo na segunda, ambos com a largura inteira.
+ */
+@media (max-width: 1199px) {
+  .content {
+    grid-template-areas:
+      'map'
+      'summary';
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 @media (min-width: 768px) {
