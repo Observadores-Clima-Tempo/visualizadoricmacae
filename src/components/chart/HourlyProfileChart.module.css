@@ -98,11 +98,6 @@
   font-size: var(--text-sm);
 }
 
-.tooltipDays {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-}
-
 @media (max-width: 767px) {
   .card {
     padding: var(--space-4);

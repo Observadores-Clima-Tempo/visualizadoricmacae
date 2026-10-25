@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { HourlyProfileChart } from '@/components/chart/HourlyProfileChart'
+import { resolveYScale } from '@/components/chart/profileChartScale'
 import type { HourlyProfilePoint } from '@/domain/heatIndexAggregations'
 
 /**
@@ -72,6 +73,45 @@ describe('HourlyProfileChart — tabela oculta', () => {
     expect(screen.getByRole('table').querySelector('caption')?.textContent).toContain(
       'Perfil horário médio do índice de calor em Trapiche',
     )
+  })
+})
+
+describe('HourlyProfileChart — linhas-guia do eixo Y', () => {
+  /** Perfil linear de `min` a `max` em 24 horas, para variar a amplitude. */
+  function ramp(min: number, max: number): HourlyProfilePoint[] {
+    return profileFrom(
+      Array.from({ length: 24 }, (_unused, hour) => min + ((max - min) * hour) / 23),
+    )
+  }
+
+  it('separa as linhas-guia em exatamente 4 °C', () => {
+    for (const [min, max] of [
+      [30, 34],
+      [24, 35.6],
+      [10, 45],
+    ] as const) {
+      const { ticks } = resolveYScale(ramp(min, max))
+      const gaps = ticks.slice(1).map((value, index) => value - ticks[index])
+
+      expect(new Set(gaps), `ticks: ${ticks.join(', ')}`).toEqual(new Set([4]))
+    }
+  })
+
+  it('fecha o domínio nas linhas-guia das bordas e cobre todos os dados', () => {
+    const profile = ramp(24, 35.6)
+    const { domain, ticks } = resolveYScale(profile)
+    const values = profile.map((point) => point.average as number)
+
+    expect(ticks[0]).toBe(domain[0])
+    expect(ticks.at(-1)).toBe(domain[1])
+    expect(domain[0]).toBeLessThanOrEqual(Math.min(...values))
+    expect(domain[1]).toBeGreaterThanOrEqual(Math.max(...values))
+  })
+
+  it('mantém o passo de 4 °C no perfil sem dados', () => {
+    const { ticks } = resolveYScale(profileFrom(Array.from({ length: 24 }, () => null)))
+
+    expect(ticks).toEqual([0, 4])
   })
 })
 

@@ -13,6 +13,7 @@ import {
 import { formatHourLabel } from '@/components/heatmap/heatmapLabels'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { findProfilePeak, type HourlyProfilePoint } from '@/domain/heatIndexAggregations'
+import { resolveYScale } from './profileChartScale'
 import styles from './HourlyProfileChart.module.css'
 
 /** Id estável do título: não reutiliza os ids do mapa nem do resumo. */
@@ -23,16 +24,9 @@ const ONE_DECIMAL = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 1,
 })
 
-const INTEGER = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
-
 /** `34.25` -> `34,2 °C` */
 function formatTemperature(value: number): string {
   return `${ONE_DECIMAL.format(value)} °C`
-}
-
-/** `3` -> `3 dias com dados` (nunca `1 dias`). */
-function formatDaysUsed(daysUsed: number): string {
-  return daysUsed === 1 ? '1 dia com dados' : `${INTEGER.format(daysUsed)} dias com dados`
 }
 
 /** Ponto entregue ao Recharts: `label` é a categoria do eixo X (`14h`). */
@@ -40,24 +34,6 @@ type ProfileChartPoint = {
   hour: number
   label: string
   average: number | null
-  daysUsed: number
-}
-
-/**
- * Domínio do eixo Y: só os dados, com folga de ~1 °C em cima e embaixo.
- * Assim a curva ocupa a maior parte da área do gráfico.
- */
-function resolveYDomain(profile: readonly HourlyProfilePoint[]): [number, number] {
-  const values = profile
-    .map((point) => point.average)
-    .filter((average): average is number => average !== null && Number.isFinite(average))
-
-  if (values.length === 0) return [0, 1]
-
-  const min = Math.min(...values)
-  const max = Math.max(...values)
-
-  return [Math.floor(min) - 1, Math.ceil(max) + 1]
 }
 
 type ProfileTooltipProps = {
@@ -66,8 +42,8 @@ type ProfileTooltipProps = {
 }
 
 /**
- * Tooltip em HTML (nunca dentro do SVG): hora, média e dias com dados. Hora
- * sem leitura mostra `Sem dado` — sem percentual e sem zero.
+ * Tooltip em HTML (nunca dentro do SVG): hora e média. Hora sem leitura mostra
+ * `Sem dado` — sem percentual e sem zero.
  */
 function ProfileTooltip({ active, payload }: ProfileTooltipProps) {
   const point = payload?.[0]?.payload
@@ -79,10 +55,7 @@ function ProfileTooltip({ active, payload }: ProfileTooltipProps) {
       {point.average === null ? (
         <p className={styles.tooltipEmpty}>Sem dado</p>
       ) : (
-        <>
-          <p className={styles.tooltipValue}>{formatTemperature(point.average)}</p>
-          <p className={styles.tooltipDays}>{formatDaysUsed(point.daysUsed)}</p>
-        </>
+        <p className={styles.tooltipValue}>{formatTemperature(point.average)}</p>
       )}
     </div>
   )
@@ -100,20 +73,20 @@ export type HourlyProfileChartProps = {
  * O gráfico é decorativo (`aria-hidden`) e não entra na ordem de tabulação: os
  * mesmos números ficam disponíveis na tabela oculta e no resumo textual, que
  * são lidos por leitores de tela.
- */export function HourlyProfileChart({ profile, bairroLabel }: HourlyProfileChartProps) {
+ */
+export function HourlyProfileChart({ profile, bairroLabel }: HourlyProfileChartProps) {
   const data = useMemo<ProfileChartPoint[]>(
     () =>
       profile.map((point) => ({
         hour: point.hour,
         label: formatHourLabel(point.hour),
         average: point.average,
-        daysUsed: point.daysUsed,
       })),
     [profile],
   )
 
   const peak = useMemo(() => findProfilePeak(profile), [profile])
-  const yDomain = useMemo(() => resolveYDomain(profile), [profile])
+  const yScale = useMemo(() => resolveYScale(profile), [profile])
 
   return (
     <section className={styles.card} aria-labelledby={HOURLY_PROFILE_TITLE_ID}>
@@ -147,8 +120,11 @@ export type HourlyProfileChartProps = {
                   tickMargin={8}
                 />
                 <YAxis
-                  domain={yDomain}
-                  allowDecimals={false}
+                  type="number"
+                  domain={yScale.domain}
+                  ticks={yScale.ticks}
+                  interval={0}
+                  tickFormatter={yScale.formatTick}
                   width={44}
                   tickLine={false}
                   axisLine={false}
